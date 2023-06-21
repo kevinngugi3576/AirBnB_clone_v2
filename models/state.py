@@ -1,35 +1,21 @@
 #!/usr/bin/python3
-"""This is the state class"""
+"""This is the city class"""
 from sqlalchemy.ext.declarative import declarative_base
 from models.base_model import BaseModel, Base
-from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String
-import models
-from models.city import City
-import shlex
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+from models.place import Place
 
 
-class State(BaseModel, Base):
-    """This is the class for State
+class City(BaseModel, Base):
+    """This is the class for City
     Attributes:
+        state_id: The state id
         name: input name
     """
-    __tablename__ = "states"
+    __tablename__ = "cities"
     name = Column(String(128), nullable=False)
-    cities = relationship("City", cascade='all, delete, delete-orphan',
-                          backref="state")
-
-    @property
-    def cities(self):
-        var = models.storage.all()
-        lista = []
-        result = []
-        for key in var:
-            city = key.replace('.', ' ')
-            city = shlex.split(city)
-            if (city[0] == 'City'):
-                lista.append(var[key])
-        for elem in lista:
-            if (elem.state_id == self.id):
-                result.append(elem)
-        return (result)
+    state_id = Column(String(60), ForeignKey('states.id'), nullable=False)
+    places = relationship("Place", cascade='all, delete, delete-orphan',
+                          backref="cities")
